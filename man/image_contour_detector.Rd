@@ -4,12 +4,14 @@
 \alias{image_contour_detector}
 \title{Unsupervised Smooth Contour Lines Detection in an image}
 \usage{
-image_contour_detector(x, Q = 2)
+image_contour_detector(x, Q = 2, ...)
 }
 \arguments{
 \item{x}{a matrix of image pixel values in the 0-255 range.}
 
 \item{Q}{numeric value with the pixel quantization step}
+
+\item{...}{further arguments, not used yet}
 }
 \value{
 an object of class cld which is a list with the following elements
@@ -32,18 +34,33 @@ with the addition of the statistical validation step. Combined with heuristics b
 an efficient algorithm is derived producing sub-pixel contours.
 }
 \examples{
+\dontshow{
+if(require(pixmap))
+\{
+}
 library(pixmap)
 imagelocation <- system.file("extdata", "image.pgm", package="image.ContourDetector")
-image <- read.pnm(file = imagelocation, cellres = 1)
-x <- image@grey * 255
-contourlines <- image_contour_detector(x)
+image         <- read.pnm(file = imagelocation, cellres = 1)
+\dontshow{
+image <- image[1:100, 1:100] ## speedup to have CRAN R CMD check within 5 secs
+}
+x             <- image@grey * 255
+contourlines  <- image_contour_detector(x, Q = 2)
 contourlines
 plot(image)
 plot(contourlines, add = TRUE, col = "red")
+\dontshow{
+\}
+# End of main if statement running only if the required packages are installed
+}
 
 ##
 ## line_segment_detector expects a matrix as input
 ##  if you have a jpg/png/... convert it to pgm first or take the r/g/b channel
+\dontshow{
+if(require(magick))
+\{
+}
 library(magick)
 x   <- image_read(system.file("extdata", "atomium.jpg", package="image.ContourDetector"))
 x
@@ -52,8 +69,32 @@ mat <- as.integer(mat, transpose = TRUE)
 mat <- drop(mat)
 contourlines <- image_contour_detector(mat)
 plot(contourlines)
+\dontshow{
+\}
+# End of main if statement running only if the required packages are installed
+}
+
+##
+##  working with a RasterLayer
+##
+\dontshow{
+if(require(raster))
+\{
+}
+\donttest{
+library(raster)
+x   <- raster(system.file("extdata", "landscape.tif", package="image.ContourDetector"))
+
+contourlines <- image_contour_detector(x)
+image(x)
+plot(contourlines, add = TRUE, col = "blue", lwd = 10)
+}
+\dontshow{
+\}
+# End of main if statement running only if the required packages are installed
+}
 }
 \references{
 Rafael Grompone von Gioi, and Gregory Randall, Unsupervised Smooth Contour Detection, 
-Image Processing On Line, 6 (2016), pp. 233-267. \url{https://doi.org/10.5201/ipol.2016.175}
+Image Processing On Line, 6 (2016), pp. 233-267. \doi{10.5201/ipol.2016.175}
 }
